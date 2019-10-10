@@ -17,7 +17,6 @@ public class CommentEntity {
     private ObjectId userId;
     private Date dateCommentAdded;
     private String commentBody;
-    private List<CommentEntity> commentList;
     private boolean commentDeleted;
 
     public CommentEntity() {
@@ -28,7 +27,6 @@ public class CommentEntity {
         this.userId = userId;
         this.dateCommentAdded = dateCommentAdded;
         this.commentBody = commentBody;
-        this.commentList = commentList;
         this.commentDeleted = commentDeleted;
     }
 
@@ -64,13 +62,6 @@ public class CommentEntity {
         this.commentBody = commentBody;
     }
 
-    public List<CommentEntity> getCommentList() {
-        return commentList;
-    }
-
-    public void setCommentList(List<CommentEntity> commentList) {
-        this.commentList = commentList;
-    }
 
     public boolean isCommentDeleted() {
         return commentDeleted;
@@ -87,7 +78,6 @@ public class CommentEntity {
                 ", userId=" + userId +
                 ", dateCommentAdded=" + dateCommentAdded +
                 ", commentBody='" + commentBody + '\'' +
-                ", commentList=" + commentList +
                 ", commentDeleted=" + commentDeleted +
                 '}';
     }

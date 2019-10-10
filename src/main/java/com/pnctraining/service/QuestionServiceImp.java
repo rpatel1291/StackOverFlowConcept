@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,27 +24,43 @@ public class QuestionServiceImp implements QuestionService {
     private static final Logger LOGGER = LogManager.getLogger(QuestionServiceImp.class);
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    QuestionRepository questionRepository;
+    private QuestionRepository questionRepository;
 
     @Autowired
-    JWTHandler jwtHandler;
+    private JWTHandler jwtHandler;
+
+    @Autowired
+    private SequenceGeneratorService sequenceGeneratorService;
 
     @Override
     public void createNewQuestion(QuestionModel questionModel, String token) throws CPSOException {
+        LOGGER.info("Question: Creating new Question. Checking Token for validity");
         if(jwtHandler.getUsernameFromToken(token) != null){
+            LOGGER.info("Question: Token is valid. Getting Question Model.");
             QuestionEntity newQuestionEntity = createNewQuestionEntityFromModel(questionModel);
-            questionRepository.save(newQuestionEntity);
-            System.out.println(newQuestionEntity.toString());
+            newQuestionEntity.setUserId(jwtHandler.getUsernameFromToken(token));
+            LOGGER.info("Question: Finding User");
+            Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
 
-            UserEntity user = userRepository.findByUserId(jwtHandler.getUsernameFromToken(token));
-            System.out.println(user.toString());
-            List<QuestionEntity> userQuestion = user.getQuestionList();
-            userQuestion.add(newQuestionEntity);
-            user.setQuestionList(userQuestion);
-            userRepository.save(user);
+            if(userEntityOptional.isPresent()) {
+                LOGGER.info("Question: Setting Question to user");
+                UserEntity userEntity = userEntityOptional.get();
+                if(userEntity.getQuestionList() == null){
+                    List<QuestionEntity> userEntityQuestionList = new ArrayList<>();
+                    userEntity.setQuestionList(userEntityQuestionList);
+                }
+                List<QuestionEntity> userEntityQuestionList = userEntity.getQuestionList();
+                userEntityQuestionList.add(newQuestionEntity);
+                userEntity.setQuestionList(userEntityQuestionList);
+                userRepository.save(userEntity);
+                LOGGER.info("Question: Question saved to user");
+            }
+            else{
+                throw new CPSOException(1012, "Non Valid User. Please sign in.");
+            }
         }
         else{
             throw new  CPSOException(1010,"User is not Authorized");
@@ -53,6 +70,7 @@ public class QuestionServiceImp implements QuestionService {
 
     private QuestionEntity createNewQuestionEntityFromModel(QuestionModel questionModel){
         QuestionEntity questionEntity = new QuestionEntity();
+        questionEntity.setQuestionId(String.valueOf(sequenceGeneratorService.generateSequence(QuestionEntity.SEQUENCE_NAME)));
         questionEntity.setDateQuestionAsked(new Date());
         questionEntity.setQuestionTitle(questionModel.getQuestionTitle());
         questionEntity.setQuestionBody(questionModel.getQuestionBody());

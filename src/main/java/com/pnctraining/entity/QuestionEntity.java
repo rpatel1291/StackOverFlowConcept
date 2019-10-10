@@ -3,6 +3,7 @@ package com.pnctraining.entity;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,6 +14,9 @@ import java.util.List;
 @Document(collection = "QuestionCollection")
 @TypeAlias("QuestionCollection")
 public class QuestionEntity {
+    @Transient
+    public static final String SEQUENCE_NAME = "Question_Sequence";
+
     @Id
     private String questionId;
     private String userId;

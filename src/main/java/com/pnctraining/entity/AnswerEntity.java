@@ -2,6 +2,7 @@ package com.pnctraining.entity;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +12,9 @@ import java.util.List;
 @Document(collection = "AnswerCollection")
 @TypeAlias("AnswerCollection")
 public class AnswerEntity{
+
+    @Transient
+    public static final String SEQUENCE_NAME = "Answer_Sequence";
 
     @Id
     private ObjectId answerId;
