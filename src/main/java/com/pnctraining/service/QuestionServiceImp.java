@@ -10,9 +10,7 @@ import com.pnctraining.security.JWTHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,14 +69,15 @@ public class QuestionServiceImp implements QuestionService {
         }
     }
 
-
     @Override
     public QuestionEntity getQuestionDetails(String questionId, String token) throws CPSOException {
         if(jwtHandler.getUsernameFromToken(token) != null) {
             Optional<QuestionEntity> userQuestion = userRepository.findUserByQuestionId(questionId).getQuestionList().stream().filter(questionEntity -> questionEntity.getQuestionId().equals(questionId)).findFirst();
             if (userQuestion.isPresent())
             {
-                //TODO increment user view count
+                /*
+                    TODO increment user view count
+                 */
                 return userQuestion.get();
             } else {
                 throw new CPSOException(1013, "Invalid Question Id");
@@ -89,7 +88,6 @@ public class QuestionServiceImp implements QuestionService {
             throw new  CPSOException(1010,"User is not Authorized");
         }
     }
-
 
     @Override
     public void updateQuestionDetails(String questionId, QuestionEntity questionEntity, String token) throws CPSOException {
@@ -136,6 +134,45 @@ public class QuestionServiceImp implements QuestionService {
 
     }
 
+    @Override
+    public List<QuestionModel> getAllQuestions(String token) throws CPSOException {
+        if(jwtHandler.getUsernameFromToken(token) != null) {
+            List<UserEntity> userEntityList = userRepository.findAll();
+
+            List<QuestionModel> questionModelList = new ArrayList<>();
+
+            for (UserEntity userEntity : userEntityList) {
+                List<QuestionEntity> questionEntityList = userEntity.getQuestionList();
+                for (QuestionEntity questionEntity : questionEntityList) {
+                    questionModelList.add(createNewQuestionModelFromEntity(questionEntity));
+                }
+            }
+            return questionModelList;
+        }else{
+            throw new CPSOException(1010,"User is not Authorized");
+        }
+    }
+
+    @Override
+    public List<QuestionEntity> getQuestionById(String token) throws CPSOException {
+        if(jwtHandler.getUsernameFromToken(token) != null){
+            Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
+            if(userEntityOptional.isPresent()){
+                UserEntity userEntity = userEntityOptional.get();
+                if(userEntity.getQuestionList() == null){
+                    return new ArrayList<QuestionEntity>();
+                }else{
+                    return userEntity.getQuestionList();
+                }
+            }else{
+                throw new CPSOException(1007, String.format("User with user id: %s", jwtHandler.getUsernameFromToken(token)));
+            }
+        }else{
+            throw new CPSOException(1010, "User is not Authorized");
+        }
+    }
+
+    /* Internal Methods */
     private QuestionEntity createNewQuestionEntityFromModel(QuestionModel questionModel){
         QuestionEntity questionEntity = new QuestionEntity();
         questionEntity.setQuestionId(String.valueOf(sequenceGeneratorService.generateSequence(QuestionEntity.SEQUENCE_NAME)));
@@ -144,5 +181,15 @@ public class QuestionServiceImp implements QuestionService {
         questionEntity.setQuestionBody(questionModel.getQuestionBody());
         questionEntity.setTagList(questionModel.getTagList());
         return questionEntity;
+    }
+
+    private QuestionModel createNewQuestionModelFromEntity(QuestionEntity questionEntity){
+        QuestionModel questionModel = new QuestionModel();
+        questionModel.setQuestionTitle(questionEntity.getQuestionTitle());
+        questionModel.setQuestionBody(questionEntity.getQuestionBody());
+        questionModel.setTagList(questionEntity.getTagList());
+        questionModel.setDateQuestionAsked(questionEntity.getDateQuestionAsked());
+        questionModel.setDisplayName(questionEntity.getDisplayName());
+        return  questionModel;
     }
 }

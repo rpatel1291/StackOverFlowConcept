@@ -8,14 +8,16 @@ public class QuestionModel {
     private String questionBody;
     private List<TagEntity> tagList;
     private Date dateQuestionAsked;
+    private String displayName;
 
-    public QuestionModel() {};
+    public QuestionModel() {}
 
-    public QuestionModel(String questionTitle, String questionBody, List<TagEntity> tagList, Date dateQuestionAsked) {
+    public QuestionModel(String questionTitle, String questionBody, List<TagEntity> tagList, Date dateQuestionAsked, String displayName) {
         this.questionTitle = questionTitle;
         this.questionBody = questionBody;
         this.tagList = tagList;
         this.dateQuestionAsked = dateQuestionAsked;
+        this.displayName = displayName;
     }
 
     public String getQuestionTitle() {
@@ -48,5 +50,13 @@ public class QuestionModel {
 
     public void setDateQuestionAsked(Date dateQuestionAsked) {
         this.dateQuestionAsked = dateQuestionAsked;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }
