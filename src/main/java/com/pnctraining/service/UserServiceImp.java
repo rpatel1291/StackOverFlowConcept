@@ -2,6 +2,7 @@ package com.pnctraining.service;
 
 import com.pnctraining.entity.UserEntity;
 import com.pnctraining.entity.UserLoginModel;
+import com.pnctraining.entity.UserModel;
 import com.pnctraining.exception.CPSOException;
 import com.pnctraining.repository.UserRepository;
 import com.pnctraining.security.JWTHandler;
@@ -74,6 +75,54 @@ public class UserServiceImp implements UserService {
         }
     }
 
+    @Override
+    public UserModel getUserDetail(String token) throws CPSOException {
+        LOGGER.info("USER DETAIL: request made to get user details for profile");
+        try{
+            Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
+            if(!userEntityOptional.isPresent()){
+                throw new CPSOException(1000, String.format("User not found with User ID: %s",jwtHandler.getUsernameFromToken((token))));
+            }else {
+                return createUserModelFromUserEntity(userEntityOptional.get());
+            }
+        }catch(Exception e){
+            LOGGER.info("USER DETAIL: Error User is not Authorized ");
+            throw new  CPSOException(1010,"User is not Authorized");
+        }
+    }
+
+    @Override
+    public void updateUserDetail(String token, UserModel userModel) throws CPSOException {
+        LOGGER.info("USER DETAIL: request made to update user information");
+        try {
+            Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
+            if(!userEntityOptional.isPresent()){
+                throw new CPSOException(1000, String.format("User not found with User ID: %s", jwtHandler.getUsernameFromToken(token)));
+            }
+            else{
+                UserEntity userEntity = userEntityOptional.get();
+                if(!userModel.getDisplayName().equals(userEntity.getDisplayName())){
+                    userEntity.setDisplayName(userModel.getDisplayName());
+                }
+                else if(!userModel.getEmail().equals(userEntity.getEmail())){
+                    userEntity.setEmail(userModel.getEmail());
+                }else if(!userEntity.getPassword().equals(toHexString(getSHA(userModel.getPassword())))){
+                    userEntity.setPassword(toHexString(getSHA(userModel.getPassword())));
+                }else if(userModel.getTagList().size() != userEntity.getTagList().size()){
+                    userEntity.setTagList(userModel.getTagList());
+                }
+                LOGGER.info("USER DETAIL: saving updated User Details");
+                userRepository.save(userEntity);
+            }
+        }catch (Exception e){
+            LOGGER.info("USER DETAIL: Error User is not Authorized");
+            throw new CPSOException(1010, "User is not Authorized");
+        }
+    }
+
+    /*
+        Internal Methods
+     */
 
     private static byte[] getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -87,5 +136,15 @@ public class UserServiceImp implements UserService {
             hexString.insert(0,'0');
         }
         return hexString.toString();
+    }
+
+    private static UserModel createUserModelFromUserEntity(UserEntity userEntity){
+        UserModel userModel = new UserModel();
+        userModel.setDisplayName(userEntity.getDisplayName());
+        userModel.setEmail(userEntity.getEmail());
+        userModel.setQuestionList(userEntity.getQuestionList());
+        userModel.setAnswerList(userEntity.getAnswerList());
+        userModel.setCommentList(userEntity.getCommentList());
+        return userModel;
     }
 }

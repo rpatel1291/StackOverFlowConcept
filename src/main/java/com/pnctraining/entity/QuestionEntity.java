@@ -20,6 +20,7 @@ public class QuestionEntity {
     @Id
     private String questionId;
     private String userId;
+    private String displayName;
     @Indexed(unique = true)
     private String questionTitle;
     private String questionBody;
@@ -193,6 +194,14 @@ public class QuestionEntity {
 
     public void questionDislikeDecrement() {
         this.questionDislikes -= 1;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     @Override

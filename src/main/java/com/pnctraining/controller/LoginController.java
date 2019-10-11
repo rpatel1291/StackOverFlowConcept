@@ -38,7 +38,6 @@ public class LoginController {
         }catch(CPSOException e){
             LOGGER.info("LOGIN: Error invalid email and password combination");
             return new ResponseEntity(new ResponseMessage(e.getStatusCode(),e.getStatusMessage()), HttpStatus.BAD_REQUEST);
-            //return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 
