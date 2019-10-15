@@ -1,6 +1,5 @@
 package com.pnctraining.entity;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,8 +12,10 @@ import java.util.List;
 public class CommentEntity {
 
     @Id
-    private ObjectId commentId;
-    private ObjectId userId;
+    private String commentId;
+    private String userId;
+    private String questionId;
+    private String displayName;
     private Date dateCommentAdded;
     private String commentBody;
     private boolean commentDeleted;
@@ -22,27 +23,29 @@ public class CommentEntity {
     public CommentEntity() {
     }
 
-    public CommentEntity(ObjectId commentId, ObjectId userId, Date dateCommentAdded, String commentBody, List<CommentEntity> commentList, boolean commentDeleted) {
+    public CommentEntity(String commentId, String userId, Date dateCommentAdded, String commentBody, boolean commentDeleted, String displayName, String questionId) {
         this.commentId = commentId;
         this.userId = userId;
         this.dateCommentAdded = dateCommentAdded;
         this.commentBody = commentBody;
         this.commentDeleted = commentDeleted;
+        this.displayName = displayName;
+        this.questionId = questionId;
     }
 
-    public ObjectId getCommentId() {
+    public String getCommentId() {
         return commentId;
     }
 
-    public void setCommentId(ObjectId commentId) {
+    public void setCommentId(String commentId) {
         this.commentId = commentId;
     }
 
-    public ObjectId getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(ObjectId userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -69,6 +72,22 @@ public class CommentEntity {
 
     public void setCommentDeleted(boolean commentDeleted) {
         this.commentDeleted = commentDeleted;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 
     @Override
