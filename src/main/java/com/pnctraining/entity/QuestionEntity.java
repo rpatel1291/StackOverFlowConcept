@@ -41,8 +41,6 @@ public class QuestionEntity {
 
     public QuestionEntity(String questionTitle, String questionBody, List<TagEntity> tagList,
                           int questionDislikes, List<AnswerEntity> answerList, List<CommentEntity> commentList) {
-        //this.questionId = new ObjectId().toString();
-//        this.userId = userId;
         this.questionTitle = questionTitle;
         this.questionBody = questionBody;
         this.tagList = tagList;

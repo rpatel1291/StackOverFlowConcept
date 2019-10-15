@@ -1,6 +1,5 @@
 package com.pnctraining.entity;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
@@ -17,9 +16,9 @@ public class AnswerEntity{
     public static final String SEQUENCE_NAME = "Answer_Sequence";
 
     @Id
-    private ObjectId answerId;
-    private ObjectId questionId;
-    private ObjectId userId;
+    private String answerId;
+    private String questionId;
+    private String userId;
     private Date dateAnswered;
     private int answerViews;
     private int answerLikes;
@@ -31,9 +30,8 @@ public class AnswerEntity{
     public AnswerEntity() {
     }
 
-    public AnswerEntity(ObjectId questionId, ObjectId userId,
+    public AnswerEntity(String questionId, String userId,
                         String answerBody, List<CommentEntity> commentsList) {
-        this.answerId = new ObjectId();
         this.questionId = questionId;
         this.userId = userId;
         this.dateAnswered = new Date();
@@ -45,27 +43,27 @@ public class AnswerEntity{
         this.answerDeleted = false;
     }
 
-    public ObjectId getAnswerId() {
+    public String getAnswerId() {
         return answerId;
     }
 
-    public void setAnswerId(ObjectId answerId) {
+    public void setAnswerId(String answerId) {
         this.answerId = answerId;
     }
 
-    public ObjectId getQuestionId() {
+    public String getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(ObjectId questionId) {
+    public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
 
-    public ObjectId getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(ObjectId userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

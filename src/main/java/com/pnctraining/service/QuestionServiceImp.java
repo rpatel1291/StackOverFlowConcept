@@ -4,7 +4,6 @@ import com.pnctraining.entity.QuestionEntity;
 import com.pnctraining.entity.QuestionModel;
 import com.pnctraining.entity.UserEntity;
 import com.pnctraining.exception.CPSOException;
-import com.pnctraining.repository.QuestionRepository;
 import com.pnctraining.repository.UserRepository;
 import com.pnctraining.security.JWTHandler;
 import org.apache.logging.log4j.LogManager;
@@ -24,9 +23,6 @@ public class QuestionServiceImp implements QuestionService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private QuestionRepository questionRepository;
 
     @Autowired
     private JWTHandler jwtHandler;
@@ -72,7 +68,7 @@ public class QuestionServiceImp implements QuestionService {
     @Override
     public QuestionEntity getQuestionDetails(String questionId, String token) throws CPSOException {
         if(jwtHandler.getUsernameFromToken(token) != null) {
-            Optional<QuestionEntity> userQuestion = userRepository.findUserByQuestionId(questionId).getQuestionList().stream().filter(questionEntity -> questionEntity.getQuestionId().equals(questionId)).findFirst();
+            Optional<QuestionEntity> userQuestion = userRepository.findUserByQuestionId(questionId).get().getQuestionList().stream().filter(questionEntity -> questionEntity.getQuestionId().equals(questionId)).findFirst();
             if (userQuestion.isPresent())
             {
                 /*
@@ -92,7 +88,7 @@ public class QuestionServiceImp implements QuestionService {
     @Override
     public void updateQuestionDetails(String questionId, QuestionEntity questionEntity, String token) throws CPSOException {
         if(jwtHandler.getUsernameFromToken(token) != null) {
-            Optional<QuestionEntity> userQuestion = userRepository.findUserByQuestionId(questionId).getQuestionList().stream().filter(questionE -> questionE.getQuestionId().equals(questionId)).findFirst();
+            Optional<QuestionEntity> userQuestion = userRepository.findUserByQuestionId(questionId).get().getQuestionList().stream().filter(questionE -> questionE.getQuestionId().equals(questionId)).findFirst();
             if (userQuestion.isPresent()) {
 
                 QuestionEntity question = userQuestion.get();
@@ -108,21 +104,24 @@ public class QuestionServiceImp implements QuestionService {
                 else{
                     throw new CPSOException(1015,"Invalid Update Request");
                 }
-                UserEntity user = userRepository.findUserByQuestionId(questionId);
-                int count = 0;
-                for(QuestionEntity qe : user.getQuestionList()){
-                    count++;
-                    if(qe.getQuestionId().equals(questionId)){
-                        break;
+                Optional<UserEntity> userEntityOptional = userRepository.findUserByQuestionId(questionId);
+                if(userEntityOptional.isPresent()) {
+                    UserEntity userEntity = userEntityOptional.get();
+                    int count = 0;
+                    for (QuestionEntity qe : userEntity.getQuestionList()) {
+                        count++;
+                        if (qe.getQuestionId().equals(questionId)) {
+                            break;
+                        }
                     }
+                    List<QuestionEntity> userQuestions = userEntity.getQuestionList();
+                    userQuestions.remove(count);
+                    userQuestions.add(question);
+                    userEntity.setQuestionList(userQuestions);
+                    userRepository.save(userEntity);
+                }else{
+                    throw new CPSOException(1014,String.format("User who asked Question with ID: %s does not exist",questionId));
                 }
-                List<QuestionEntity> userQuestions = user.getQuestionList();
-                userQuestions.remove(count);
-                userQuestions.add(question);
-                user.setQuestionList(userQuestions);
-                userRepository.save(user);
-
-
             }
             else {
                 throw new CPSOException(1013, "Invalid Question Id");

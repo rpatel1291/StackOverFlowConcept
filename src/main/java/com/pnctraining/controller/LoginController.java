@@ -26,8 +26,7 @@ public class LoginController {
     //Log4j
     private static final Logger LOGGER = LogManager.getLogger(LoginController.class);
 
-    @PostMapping
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity login(@RequestBody UserLoginModel userLoginModel){
         try{
             LOGGER.info("LOGIN: User has entered Email and Password");
