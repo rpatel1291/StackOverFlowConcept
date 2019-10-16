@@ -14,6 +14,7 @@ public class CommentEntity {
     private String commentId;
     private String userId;
     private String questionId;
+    private String answerId;
     private String displayName;
     private Date dateCommentAdded;
     private String commentBody;
@@ -22,10 +23,10 @@ public class CommentEntity {
     public CommentEntity() {
     }
 
-    public CommentEntity(String commentId, String userId, Date dateCommentAdded, String commentBody, boolean commentDeleted, String displayName, String questionId) {
+    public CommentEntity(String commentId, String userId, String commentBody, boolean commentDeleted, String displayName, String questionId, String answerId) {
         this.commentId = commentId;
         this.userId = userId;
-        this.dateCommentAdded = dateCommentAdded;
+        this.answerId = answerId;
         this.commentBody = commentBody;
         this.commentDeleted = commentDeleted;
         this.displayName = displayName;
@@ -87,6 +88,14 @@ public class CommentEntity {
 
     public void setQuestionId(String questionId) {
         this.questionId = questionId;
+    }
+
+    public String getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(String answerId) {
+        this.answerId = answerId;
     }
 
     @Override

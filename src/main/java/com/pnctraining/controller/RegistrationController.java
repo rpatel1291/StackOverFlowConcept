@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.NoSuchAlgorithmException;
 
 @RestController
-@RequestMapping("${base.url}/registration")
+@RequestMapping("${base.url}/user/registration")
 public class RegistrationController {
 
     @Autowired

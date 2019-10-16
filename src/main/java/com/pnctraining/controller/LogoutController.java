@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${base.url}")
+@RequestMapping("${base.url}/user")
 public class LogoutController {
 
     @Autowired

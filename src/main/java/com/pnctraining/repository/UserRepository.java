@@ -16,4 +16,7 @@ public interface UserRepository extends MongoRepository<UserEntity, String> {
 
     @Query("{'questionList.questionId' :?0}")
     Optional<UserEntity> findUserByQuestionId(String id);
+
+    @Query("{'answerList.answerId' :?0}")
+    Optional<UserEntity> findUserByAnswerId(String id);
 }

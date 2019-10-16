@@ -33,7 +33,7 @@ public class ProfileController {
 
     }
 
-    @PutMapping
+    @PatchMapping
     public ResponseEntity updateUserDetail(@RequestHeader String token, @RequestBody UserModel userModel){
         LOGGER.info("USER PROFILE: Update user profile request");
         userService.updateUserDetail(token, userModel);

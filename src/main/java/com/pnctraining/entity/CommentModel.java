@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class CommentModel {
     private String userId;
+    private String questionId;
+    private String answerId;
     private String displayName;
     private Date dateCommentAdded;
     private String commentBody;
@@ -41,5 +43,21 @@ public class CommentModel {
 
     public void setCommentBody(String commentBody) {
         this.commentBody = commentBody;
+    }
+
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
+    }
+
+    public String getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(String answerId) {
+        this.answerId = answerId;
     }
 }

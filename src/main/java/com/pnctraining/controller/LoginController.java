@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("${base.url}")
+@RequestMapping("${base.url}/user")
 public class LoginController {
 
     @Autowired

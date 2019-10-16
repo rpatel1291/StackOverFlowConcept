@@ -1,10 +1,7 @@
 package com.pnctraining.service;
 
 
-import com.pnctraining.entity.CommentEntity;
-import com.pnctraining.entity.CommentModel;
-import com.pnctraining.entity.QuestionEntity;
-import com.pnctraining.entity.UserEntity;
+import com.pnctraining.entity.*;
 import com.pnctraining.exception.CPSOException;
 import com.pnctraining.repository.UserRepository;
 import com.pnctraining.security.JWTHandler;
@@ -37,8 +34,9 @@ public class CommentServiceImp implements CommentService {
         try {
             if (jwtHandler.getUsernameFromToken(token) != null) {
                 commentModel.setUserId(jwtHandler.getUsernameFromToken(token));
-                commentModel.setUserId(userRepository.findByUserId(jwtHandler.getUsernameFromToken(token)).getDisplayName());
+                commentModel.setDisplayName(userRepository.findByUserId(jwtHandler.getUsernameFromToken(token)).getDisplayName());
                 commentModel.setDateCommentAdded(new Date());
+                commentModel.setQuestionId(questionId);
                 CommentEntity commentEntity = createCommentEntityFromModel(commentModel);
 
                 Optional<UserEntity> userEntityOptional = userRepository.findUserByQuestionId(questionId);
@@ -105,7 +103,57 @@ public class CommentServiceImp implements CommentService {
     @Override
     public void addCommentToAnswer(String token, CommentModel commentModel, String answerId) throws CPSOException {
         try{
-            
+            if(jwtHandler.getUsernameFromToken(token) == null){
+                throw new CPSOException(1001, "Unauthorized User");
+            }
+            commentModel.setUserId(jwtHandler.getUsernameFromToken(token));
+            commentModel.setDisplayName(userRepository.findByUserId(jwtHandler.getUsernameFromToken(token)).getDisplayName());
+            commentModel.setDateCommentAdded(new Date());
+            commentModel.setAnswerId(answerId);
+            CommentEntity commentEntity = createCommentEntityFromModel(commentModel);
+
+
+            Optional<UserEntity> userEntityOptional = userRepository.findUserByAnswerId(answerId);
+            if(userEntityOptional.isPresent()){
+                  UserEntity userEntity = userEntityOptional.get();
+                  List<AnswerEntity> answerEntityList = userEntity.getAnswerList();
+                  Optional<AnswerEntity> answerEntityOptional = answerEntityList.stream().filter(ae -> ae.getAnswerId().equals(answerId)).findFirst();
+                  if(answerEntityOptional.isPresent()){
+                      AnswerEntity answerEntity = answerEntityOptional.get();
+                      List<CommentEntity> answerCommentEntityList = answerEntity.getCommentsList();
+                      answerCommentEntityList.add(commentEntity);
+                      answerEntity.setCommentsList(answerCommentEntityList);
+
+                      int counter = 0;
+                      for(AnswerEntity ae: answerEntityList){
+                          if(ae.getAnswerId().equals(answerId)){
+                              break;
+                          }
+                          counter++;
+                      }
+
+                      answerEntityList.remove(counter);
+                      answerEntityList.add(answerEntity);
+                      userEntity.setAnswerList(answerEntityList);
+                      userRepository.save(userEntity);
+
+                      UserEntity userWhoMadeTheComment = userRepository.findByUserId(jwtHandler.getIssuerFromToken(token));
+                      List<CommentEntity> commentEntityList = userWhoMadeTheComment.getCommentList();
+                      commentEntityList.add(commentEntity);
+                      userWhoMadeTheComment.setCommentList(commentEntityList);
+
+                      userRepository.save(userWhoMadeTheComment);
+
+
+
+                  }else{
+                      throw new CPSOException(1021, "Answer not found");
+                  }
+
+            }else{
+                throw new CPSOException(1002, "User not found");
+            }
+
         }catch (CPSOException se){
             LOGGER.error(String.format("CommentServiceImp[addCommentToAnswer] : %s ",se));
             throw se;
@@ -121,6 +169,8 @@ public class CommentServiceImp implements CommentService {
         commentEntity.setDisplayName(commentModel.getDisplayName());
         commentEntity.setDateCommentAdded(commentModel.getDateCommentAdded());
         commentEntity.setCommentBody(commentModel.getCommentBody());
+        commentEntity.setQuestionId(commentModel.getQuestionId());
+        commentEntity.setAnswerId(commentModel.getAnswerId());
         return commentEntity;
     }
 }

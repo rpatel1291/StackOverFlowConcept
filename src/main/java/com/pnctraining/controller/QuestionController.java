@@ -46,7 +46,7 @@ public class QuestionController {
 
     }
 
-    @PutMapping(value = "/{questionId}/update")
+    @PatchMapping(value = "/{questionId}/update")
     public ResponseEntity updateQuestionDetails(@PathVariable String questionId, @RequestBody QuestionEntity questionEntity, @RequestHeader String token){
             LOGGER.info("UPDATE QUESTION: Update question request");
             questionService.updateQuestionDetails(questionId,questionEntity,token);
