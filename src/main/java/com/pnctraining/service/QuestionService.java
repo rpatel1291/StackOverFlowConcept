@@ -12,6 +12,5 @@ public interface QuestionService {
     public QuestionEntity getQuestionDetails(String questionId, String token) throws CPSOException;
     public void updateQuestionDetails(String questionId, QuestionEntity questionEntity, String token) throws CPSOException;
     public List<QuestionModel> getAllQuestions(String token) throws CPSOException;
-
     public List<QuestionEntity> getQuestionById(String token) throws  CPSOException;
 }

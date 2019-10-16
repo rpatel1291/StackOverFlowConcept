@@ -28,16 +28,11 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseMessage> login(@RequestBody UserLoginModel userLoginModel){
-        try{
-            LOGGER.info("LOGIN: User has entered Email and Password");
+            LOGGER.info("LoginController[login(UserLoginModel)]: User has entered Email and Password");
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("token",userService.logIntoAccount(userLoginModel));
-            LOGGER.info("LOGIN: Successful");
+            LOGGER.info("LoginController[login(UserLoginModel)]: Successful");
             return new ResponseEntity<>(responseHeaders,HttpStatus.OK);
-        }catch(CPSOException e){
-            LOGGER.info("LOGIN: Error invalid email and password combination");
-            return new ResponseEntity<>(new ResponseMessage(e.getStatusCode(),e.getStatusMessage()), HttpStatus.BAD_REQUEST);
-        }
     }
 
 

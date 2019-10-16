@@ -1,7 +1,5 @@
 package com.pnctraining.controller;
 
-
-import com.pnctraining.exception.CPSOException;
 import com.pnctraining.exception.ResponseMessage;
 import com.pnctraining.service.UserService;
 import org.apache.logging.log4j.LogManager;

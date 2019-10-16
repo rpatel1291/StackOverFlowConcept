@@ -34,66 +34,85 @@ public class CommentServiceImp implements CommentService {
 
     @Override
     public void addCommentToQuestion(String token, CommentModel commentModel, String questionId) throws CPSOException{
-        if(jwtHandler.getUsernameFromToken(token) != null) {
-            commentModel.setUserId(jwtHandler.getUsernameFromToken(token));
-            commentModel.setUserId(userRepository.findByUserId(jwtHandler.getUsernameFromToken(token)).getDisplayName());
-            commentModel.setDateCommentAdded(new Date());
-            CommentEntity commentEntity = createCommentEntityFromModel(commentModel);
+        try {
+            if (jwtHandler.getUsernameFromToken(token) != null) {
+                commentModel.setUserId(jwtHandler.getUsernameFromToken(token));
+                commentModel.setUserId(userRepository.findByUserId(jwtHandler.getUsernameFromToken(token)).getDisplayName());
+                commentModel.setDateCommentAdded(new Date());
+                CommentEntity commentEntity = createCommentEntityFromModel(commentModel);
 
-            Optional<UserEntity> userEntityOptional = userRepository.findUserByQuestionId(questionId);
+                Optional<UserEntity> userEntityOptional = userRepository.findUserByQuestionId(questionId);
 
-            if(userEntityOptional.isPresent()){
-                UserEntity userEntity = userEntityOptional.get();
-                List<QuestionEntity> questionEntityList = userEntity.getQuestionList();
-                Optional<QuestionEntity> questionEntityOptional = questionEntityList.stream().filter(qe -> qe.getQuestionId().equals(questionId)).findFirst();
-                if(questionEntityOptional.isPresent()){
-                    QuestionEntity questionEntity = questionEntityOptional.get();
-                    if(questionEntity.getCommentList() == null){
-                        questionEntity.setCommentList(new ArrayList<CommentEntity>());
-                    }
-                    List<CommentEntity> commentEntityList = questionEntity.getCommentList();
-                    commentEntityList.add(commentEntity);
-
-                    questionEntity.setCommentList(commentEntityList);
-                    int counter = 0;
-                    for(QuestionEntity qe : questionEntityList){
-                        if(qe.getQuestionId().equals(questionId)){
-                            break;
+                if (userEntityOptional.isPresent()) {
+                    UserEntity userEntity = userEntityOptional.get();
+                    List<QuestionEntity> questionEntityList = userEntity.getQuestionList();
+                    Optional<QuestionEntity> questionEntityOptional = questionEntityList.stream().filter(qe -> qe.getQuestionId().equals(questionId)).findFirst();
+                    if (questionEntityOptional.isPresent()) {
+                        QuestionEntity questionEntity = questionEntityOptional.get();
+                        if (questionEntity.getCommentList() == null) {
+                            questionEntity.setCommentList(new ArrayList<CommentEntity>());
                         }
-                        counter++;
+                        List<CommentEntity> commentEntityList = questionEntity.getCommentList();
+                        commentEntityList.add(commentEntity);
+
+                        questionEntity.setCommentList(commentEntityList);
+                        int counter = 0;
+                        for (QuestionEntity qe : questionEntityList) {
+                            if (qe.getQuestionId().equals(questionId)) {
+                                break;
+                            }
+                            counter++;
+                        }
+                        questionEntityList.remove(counter);
+                        questionEntityList.add(questionEntity);
+
+                        userEntity.setQuestionList(questionEntityList);
+
+                        userRepository.save(userEntity);
+
+                        userEntity = userRepository.findByUserId(jwtHandler.getUsernameFromToken(token));
+                        if (userEntity.getCommentList() == null) {
+                            userEntity.setCommentList(new ArrayList<CommentEntity>());
+                        }
+                        commentEntityList = userEntity.getCommentList();
+                        commentEntityList.add(commentEntity);
+                        userEntity.setCommentList(commentEntityList);
+
+                        userRepository.save(userEntity);
+
+                    } else {
+                        //question does not exist
+                        throw new CPSOException(1020, "Question not found");
                     }
-                    questionEntityList.remove(counter);
-                    questionEntityList.add(questionEntity);
-
-                    userEntity.setQuestionList(questionEntityList);
-
-                    userRepository.save(userEntity);
-
-                    userEntity = userRepository.findByUserId(jwtHandler.getUsernameFromToken(token));
-                    if(userEntity.getCommentList() == null){
-                        userEntity.setCommentList(new ArrayList<CommentEntity>());
-                    }
-                    commentEntityList = userEntity.getCommentList();
-                    commentEntityList.add(commentEntity);
-                    userEntity.setCommentList(commentEntityList);
-
-                    userRepository.save(userEntity);
-
-                }else{
-                    //question does not exist
-                    throw new CPSOException(1020,String.format("Question with question ID: %s does not exist.",questionId));
+                } else {
+                    //user does not exist
+                    throw new  CPSOException(1002, "User not found");
                 }
+
             }else{
-                //user does not exist
-                throw new CPSOException(1010,String.format("User with Question ID: %s does not exist.",questionId) );
+                throw new CPSOException(1001, "Unauthorized User");
             }
 
+        }catch(CPSOException se){
+            LOGGER.error(String.format("CommentServiceImp[addCommentToQuestion] : %s ",se));
+            throw se;
+        }catch(Exception e){
+            LOGGER.error(String.format("CommentServiceImp[addCommentToQuestion] : %s ",e));
+            throw new CPSOException(1026,"Unable to add comment to question");
         }
     }
 
     @Override
     public void addCommentToAnswer(String token, CommentModel commentModel, String answerId) throws CPSOException {
-
+        try{
+            
+        }catch (CPSOException se){
+            LOGGER.error(String.format("CommentServiceImp[addCommentToAnswer] : %s ",se));
+            throw se;
+        }
+        catch (Exception e){
+            LOGGER.error(String.format("CommentServiceImp[addCommentToAnswer] : %s ",e));
+            throw new CPSOException(1026,"Unable to add comment to answer");}
     }
 
     private CommentEntity createCommentEntityFromModel(CommentModel commentModel) {

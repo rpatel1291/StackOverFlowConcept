@@ -28,11 +28,10 @@ public class RegistrationController {
        try {
            LOGGER.info("Post(start): Register form has been submitted");
            registrationService.createNewUser(userEntity);
-           LOGGER.info(String.format("Post(end): User is registered with UserId: %s", userEntity.getUserId()) );
        }catch (CPSOException e){
-           return new ResponseEntity(new ResponseMessage(e.getStatusCode(),e.getStatusMessage()), HttpStatus.BAD_REQUEST);
+           return new ResponseEntity<>(new ResponseMessage(e.getStatusCode(),e.getStatusMessage()), HttpStatus.BAD_REQUEST);
        } catch (NoSuchAlgorithmException e) {
-           e.printStackTrace();
+           return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
        }
         return new ResponseEntity(HttpStatus.CREATED);
     }

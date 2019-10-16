@@ -20,34 +20,25 @@ public class ProfileController {
     JWTHandler jwtHandler;
 
     @Autowired
-    private
     UserService userService;
 
     private static final Logger LOGGER = LogManager.getLogger(ProfileController.class);
 
     @GetMapping
     public ResponseEntity getUserDetail(@RequestHeader String token){
-        try{
-            LOGGER.info("USER PROFILE: Get user profile request");
-            UserModel userModel = userService.getUserDetail(token);
-            return new ResponseEntity(userModel, HttpStatus.OK);
-        }catch (CPSOException e){
-            LOGGER.info("USER PROFILE: Error in getting profile request");
-            return new ResponseEntity(new ResponseMessage(e.getStatusCode(),e.getStatusMessage()),HttpStatus.BAD_REQUEST);
-        }
+
+        LOGGER.info("USER PROFILE: Get user profile request");
+        UserModel userModel = userService.getUserDetail(token);
+        return new ResponseEntity<>(userModel, HttpStatus.OK);
+
     }
 
     @PutMapping
     public ResponseEntity updateUserDetail(@RequestHeader String token, @RequestBody UserModel userModel){
-        try{
-            LOGGER.info("USER PROFILE: Update user profile request");
-            userService.updateUserDetail(token, userModel);
-            LOGGER.info("USER PROFILE: Update to user profile has been processed");
-            return new ResponseEntity(HttpStatus.OK);
-        }catch (CPSOException e){
-            LOGGER.info("");
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
+        LOGGER.info("USER PROFILE: Update user profile request");
+        userService.updateUserDetail(token, userModel);
+        LOGGER.info("USER PROFILE: Update to user profile has been processed");
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 

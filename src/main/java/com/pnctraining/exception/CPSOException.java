@@ -1,6 +1,6 @@
 package com.pnctraining.exception;
 
-public class CPSOException extends Exception {
+public class CPSOException extends RuntimeException {
     private Integer statusCode;
     private String statusMessage;
 

@@ -23,25 +23,16 @@ public class CommentController {
 
 
     @PostMapping("/addquestioncomment")
-    public ResponseEntity addCommentToQuestion(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value="questionId") String questionId ) throws CPSOException {
-        try {
+    public ResponseEntity<ResponseMessage> addCommentToQuestion(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value="questionId") String questionId ) {
             commentService.addCommentToQuestion(token, commentModel, questionId);
-            return new ResponseEntity(HttpStatus.CREATED);
-        }catch(CPSOException e){
-            return new ResponseEntity(new ResponseMessage(e.getStatusCode(), e.getStatusMessage()), HttpStatus.BAD_REQUEST);
-        }catch(Exception e){
-            return new ResponseEntity(e.fillInStackTrace(),HttpStatus.BAD_REQUEST);
-        }
+            return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/{answerId}/addanswercomment")
-    public ResponseEntity addCommentToAnswer(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value = "answerId") String answerId) throws CPSOException {
-        try {
+    public ResponseEntity addCommentToAnswer(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value = "answerId") String answerId) {
             commentService.addCommentToAnswer(token, commentModel, answerId);
             return new ResponseEntity(HttpStatus.CREATED);
-        }catch(CPSOException e){
 
-        }
     }
 
 
