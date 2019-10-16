@@ -80,6 +80,7 @@ public class CommentServiceImp implements CommentService {
 
                     } else {
                         //question does not exist
+                        LOGGER.error("CommentServiceImp[addCommentToQuestion]: Question not found");
                         throw new CPSOException(1020, "Question not found");
                     }
                 } else {
