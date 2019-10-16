@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("${base.url}/{questionId}")
 public class CommentController {
 
-    private static final Logger LOGGER = LogManager.getLogger(UserController.class);
+    private static final Logger LOGGER = LogManager.getLogger(CommentController.class);
 
     @Autowired
     private CommentService commentService;
 
 
-    @PostMapping("/comment")
+    @PostMapping("/addquestioncomment")
     public ResponseEntity addCommentToQuestion(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value="questionId") String questionId ) throws CPSOException {
         try {
             commentService.addCommentToQuestion(token, commentModel, questionId);
@@ -34,15 +34,15 @@ public class CommentController {
         }
     }
 
-//    @PostMapping("/{answerId}")
-//    public ResponseEntity addCommentToAnswer(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value = "answerId") String answerId) throws CPSOException {
-//        try {
-//            commentService.addCommentToAnswer(token, commentModel, answerId);
-//            return new ResponseEntity(new ResponseMessage())
-//        }catch(CPSOException e){
-//
-//        }
-//    }
+    @PostMapping("/{answerId}/addanswercomment")
+    public ResponseEntity addCommentToAnswer(@RequestHeader String token, @RequestBody CommentModel commentModel, @PathVariable(value = "answerId") String answerId) throws CPSOException {
+        try {
+            commentService.addCommentToAnswer(token, commentModel, answerId);
+            return new ResponseEntity(HttpStatus.CREATED);
+        }catch(CPSOException e){
+
+        }
+    }
 
 
 }

@@ -20,7 +20,7 @@ public class AnswerController {
     @Autowired
     private AnswerService answerService;
 
-    @PostMapping("/answer")
+    @PostMapping("/addanswer")
     public ResponseEntity addAnswer(@RequestHeader(value="token") String token,@PathVariable(value = "questionId") String questionId , @RequestBody AnswerModel answerModel){
 
         try{

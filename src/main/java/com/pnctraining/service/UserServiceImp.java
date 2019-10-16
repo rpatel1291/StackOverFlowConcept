@@ -49,57 +49,62 @@ public class UserServiceImp implements UserService {
     public String logIntoAccount(UserLoginModel userLoginModel) throws CPSOException {
         LOGGER.info("LOGIN: Request to login");
         UserEntity userEntity = userRepository.findByEmail(userLoginModel.getEmail());
-        String token = null;
+
         try {
-            if (userEntity != null){
-                if(userEntity.getPassword().equals(toHexString(getSHA(userLoginModel.getPassword())))) {
-                    token = jwtHandler.createToken(userEntity.getUserId());
-                }
+            if (userEntity != null && userEntity.getPassword().equals(toHexString(getSHA(userLoginModel.getPassword())))) {
+                    return jwtHandler.createToken(userEntity.getUserId());
             }
+            else{
+                throw new CPSOException(1024, "Invalid credentials");
+            }
+        }catch (CPSOException e){
+            LOGGER.error(String.format("UserServiceImpl[login(user] : %s", e));
+            throw e;
         }
         catch(Exception e){
-                LOGGER.info("Login: Failed to login the user");
-                throw new CPSOException(1008,"User has entered invalid email or password");
+            LOGGER.error(String.format("UserServiceImpl[login(user] : %s", e));
+            throw new CPSOException(1023,"User has entered invalid email or password");
         }
-        return token;
     }
 
     @Override
-    public void invalidateToken(String token) throws CPSOException {
+    public void logoutOfAccount(String token) {
         try{
             jwtHandler.revokeToken(token);
         }
         catch(Exception e){
-            LOGGER.info("Logout: Failed to logout the user");
-            throw new CPSOException(1009,"Unable to Logout");
+            LOGGER.error(String.format("UserServiceImp[logout(String)] : %s", e));
         }
     }
 
     @Override
     public UserModel getUserDetail(String token) throws CPSOException {
-        LOGGER.info("USER DETAIL: request made to get user details for profile");
+        LOGGER.info("UserServiceImp[getUserDetail(String)] : request made to get user details for profile");
         try{
             Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
-            if(!userEntityOptional.isPresent()){
-                throw new CPSOException(1000, String.format("User not found with User ID: %s",jwtHandler.getUsernameFromToken((token))));
-            }else {
-                return createUserModelFromUserEntity(userEntityOptional.get());
+            if(!userEntityOptional.isPresent() || !jwtHandler.validate(token,jwtHandler.getUsernameFromToken(token))) {
+                throw new CPSOException(1001, "Unauthorized user");
             }
-        }catch(Exception e){
-            LOGGER.info("USER DETAIL: Error User is not Authorized ");
-            throw new  CPSOException(1010,"User is not Authorized");
+
+            return createUserModelFromUserEntity(userEntityOptional.get());
+        }catch (CPSOException se){
+            LOGGER.error(String.format("UserServiceImp[getUserDetail(String)] : %s", se));
+            throw se;
+        }
+        catch(Exception e){
+            LOGGER.error(String.format("UserServiceImp[getUserDetail(String)] : %s", e));
+            throw new  CPSOException(1025, "Unable to get user details");
         }
     }
 
     @Override
     public void updateUserDetail(String token, UserModel userModel) throws CPSOException {
-        LOGGER.info("USER DETAIL: request made to update user information");
+        LOGGER.info("UserServiceImp[updateUserDetails(String, UserModel)] : request made to update user information");
         try {
             Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
             if(!userEntityOptional.isPresent()){
-                throw new CPSOException(1000, String.format("User not found with User ID: %s", jwtHandler.getUsernameFromToken(token)));
-            }
-            else{
+                throw new CPSOException(1001, "Unauthorized User");
+            } else{
                 UserEntity userEntity = userEntityOptional.get();
                 if(!userModel.getDisplayName().equals(userEntity.getDisplayName())){
                     userEntity.setDisplayName(userModel.getDisplayName());
@@ -111,12 +116,16 @@ public class UserServiceImp implements UserService {
                 }else if(userModel.getTagList().size() != userEntity.getTagList().size()){
                     userEntity.setTagList(userModel.getTagList());
                 }
-                LOGGER.info("USER DETAIL: saving updated User Details");
+                LOGGER.info("UserServiceImp[updateUserDetails(String, UserModel)] : saving updated User Details");
                 userRepository.save(userEntity);
             }
-        }catch (Exception e){
-            LOGGER.info("USER DETAIL: Error User is not Authorized");
-            throw new CPSOException(1010, "User is not Authorized");
+        }catch (CPSOException se){
+            LOGGER.error(String.format("UserServiceImp[updateUserDetails(String,UserModel)] : %s",se));
+            throw se;
+        }
+        catch (Exception e){
+            LOGGER.error(String.format("UserServiceImp[updateUserDetails(String,UserModel)] : %s",e));
+            throw new CPSOException(1026, "Unable to update user details");
         }
     }
 

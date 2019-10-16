@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserService {
     public Optional<UserEntity> findUserByUserId(String userId) throws CPSOException;
     public String logIntoAccount(UserLoginModel userLoginModel) throws CPSOException;
-    public void invalidateToken(String token) throws CPSOException;
+    public void logoutOfAccount(String token);
 
     public UserModel getUserDetail(String token) throws CPSOException;
     public void updateUserDetail(String token, UserModel userModel) throws CPSOException;

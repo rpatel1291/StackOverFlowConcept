@@ -91,6 +91,11 @@ public class CommentServiceImp implements CommentService {
         }
     }
 
+    @Override
+    public void addCommentToAnswer(String token, CommentModel commentModel, String answerId) throws CPSOException {
+
+    }
+
     private CommentEntity createCommentEntityFromModel(CommentModel commentModel) {
         CommentEntity commentEntity = new CommentEntity();
         commentEntity.setUserId(commentModel.getUserId());

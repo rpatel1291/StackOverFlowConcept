@@ -1,19 +1,19 @@
 package com.pnctraining.exception;
 
 public class CPSOException extends Exception {
-    private int statusCode;
+    private Integer statusCode;
     private String statusMessage;
 
-    public CPSOException(int statusCode, String statusMessage) {
+    public CPSOException(Integer statusCode, String statusMessage) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
     }
 
-    public int getStatusCode() {
+    public Integer getStatusCode() {
         return statusCode;
     }
 
-    public void setStatusCode(int statusCode) {
+    public void setStatusCode(Integer statusCode) {
         this.statusCode = statusCode;
     }
 
