@@ -11,7 +11,7 @@ public class TagEntity {
 
     @Id
     private String tagId;
-    @Indexed(unique = true)
+//    @Indexed(unique = true)
     private String tagName;
 
     public TagEntity(String tagName) {

@@ -21,11 +21,9 @@ public class QuestionEntity {
     private String questionId;
     private String userId;
     private String displayName;
-    @Indexed(unique = true)
     private String questionTitle;
     private String questionBody;
     private List<TagEntity> tagList;
-    @CreatedDate
     private Date dateQuestionAsked;
     private int questionViews;
     private int numberOfAnswers;

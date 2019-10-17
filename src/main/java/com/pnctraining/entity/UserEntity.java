@@ -1,6 +1,7 @@
 package com.pnctraining.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,6 +10,9 @@ import java.util.List;
 @Document(collection = "UserCollection")
 @TypeAlias("UserCollection")
 public class UserEntity {
+
+    @Transient
+    public static final String SEQUENCE_NAME = "User_Sequence";
 
     @Id
     private String userId;
@@ -117,6 +121,7 @@ public class UserEntity {
         this.accountDisable = false;
     }
 
+    public UserEntity(){}
 
     @Override
     public String toString() {

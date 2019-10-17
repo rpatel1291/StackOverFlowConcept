@@ -166,7 +166,7 @@ public class QuestionServiceImp implements QuestionService {
             if(userEntityOptional.isPresent()){
                 UserEntity userEntity = userEntityOptional.get();
                 if(userEntity.getQuestionList() == null){
-                    return new ArrayList<QuestionEntity>();
+                    return new ArrayList<>();
                 }else{
                     return userEntity.getQuestionList();
                 }

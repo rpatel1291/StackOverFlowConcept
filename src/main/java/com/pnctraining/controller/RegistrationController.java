@@ -1,6 +1,6 @@
 package com.pnctraining.controller;
 
-import com.pnctraining.entity.UserEntity;
+import com.pnctraining.entity.RegisterModel;
 import com.pnctraining.exception.CPSOException;
 import com.pnctraining.exception.ResponseMessage;
 import com.pnctraining.service.RegistrationService;
@@ -24,10 +24,10 @@ public class RegistrationController {
     private static final Logger LOGGER = LogManager.getLogger(RegistrationController.class);
 
     @PostMapping
-    public ResponseEntity register(@RequestBody UserEntity userEntity){
+    public ResponseEntity register(@RequestBody RegisterModel registerModel){
        try {
            LOGGER.info("Post(start): Register form has been submitted");
-           registrationService.createNewUser(userEntity);
+           registrationService.createNewUser(registerModel);
        }catch (CPSOException e){
            return new ResponseEntity<>(new ResponseMessage(e.getStatusCode(),e.getStatusMessage()), HttpStatus.BAD_REQUEST);
        } catch (NoSuchAlgorithmException e) {
