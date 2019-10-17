@@ -31,7 +31,7 @@ public class UserServiceImp implements UserService {
 
 
     @Override
-    public Optional<UserEntity> findUserByUserId(String userId) throws CPSOException {
+    public Optional<UserEntity> findUserByUserId(String userId) {
         LOGGER.info("FIND USER BY USER ID");
         if(!userRepository.findById(userId).isPresent()){
             LOGGER.info("FIND USER BY ID: Error User does not exist");
@@ -46,7 +46,7 @@ public class UserServiceImp implements UserService {
 
 
     @Override
-    public String logIntoAccount(UserLoginModel userLoginModel) throws CPSOException {
+    public String logIntoAccount(UserLoginModel userLoginModel) {
         LOGGER.info("LOGIN: Request to login");
         UserEntity userEntity = userRepository.findByEmail(userLoginModel.getEmail());
 
@@ -78,7 +78,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserModel getUserDetail(String token) throws CPSOException {
+    public UserModel getUserDetail(String token) {
         LOGGER.info("UserServiceImp[getUserDetail(String)] : request made to get user details for profile");
         try{
             Optional<UserEntity> userEntityOptional = userRepository.findById(jwtHandler.getUsernameFromToken(token));
