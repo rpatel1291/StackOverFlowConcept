@@ -16,7 +16,7 @@ services:
 #    command: mongod --smallfiles --logpath=/dev/null
 
   stackoverflow:
-    image: patelravi1291/stackoverflow:v4
+    image: patelravi1291/stackoverflow:v5.2
     environment:
       - MONGO_URI=mongodb://mongodb/stackoverflow
     volumes:
